@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:1.25
+    container_name: nginx
+    ports:
+      - "1243:80"
+    volumes:
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - vita
+    depends_on:
+      - php
+
+  php:
+    image: php:7.4-fpm
+    container_name: php
+    volumes:
+      - ./:/var/local/sandboxes/dev/www
+    environment:
+      - PHP_FPM_LISTEN=0.0.0.0:9000
+    networks:
+      - vita
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: example_password
+      POSTGRES_USER: example_user
+      POSTGRES_DB: example_db
+    networks:
+      - vita
+
+networks:
+  vita:
+    driver: bridge
+
+volumes:
+  postgres_data:  # По желанию, для сохранения данных БД
